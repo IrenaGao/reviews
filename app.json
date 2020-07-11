@@ -1,0 +1,12 @@
+{
+  "name": "reviews",
+  "displayName": "reviews",
+  "expo": {
+    "name": "reviews",
+    "slug": "reviews",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
