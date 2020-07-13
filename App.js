@@ -8,7 +8,7 @@ import 'firebase/firestore';
 //Navigations
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { materialBottomTabNavigator, createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 //Import Screens
 import Home from './screens/Home';
