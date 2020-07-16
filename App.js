@@ -12,8 +12,8 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 
 //Import Screens
 // import Home from './screens/Home';
-// import Register from './screens/Register';
-// import Login from './screens/Login';
+import Register from './screens/Register';
+import Login from './screens/Login';
 
 import getEnvVars from './environment';
 const { yelpFusionKey } = getEnvVars();
@@ -32,32 +32,32 @@ export default class App extends React.Component {
     user: null,
   }
 
-  // componentDidMount = async () => {
-  //   app.auth().onAuthStateChanged(async user => {
-  //     if(user){
-  //      let uid = app.auth().currentUser?.uid;
-  //      this.setState({user: user});
-  //     }
-  //     else{
-  //       this.setState({user : null});
-  //     }
+  componentDidMount = async () => {
+    app.auth().onAuthStateChanged(async user => {
+      if(user){
+       let uid = app.auth().currentUser?.uid;
+       this.setState({user: user});
+      }
+      else{
+        this.setState({user : null});
+      }
 
-  //     if(this.state.isLoading === true){
-  //       this.setState({isLoading: false});
-  //     }
-  //   })
-  // }
+      if(this.state.isLoading === true){
+        this.setState({isLoading: false});
+      }
+    })
+  }
 
   render(){
-    // if(this.state.loading === true){
-    //   return null;
-    // }
-    // if(this.state.user !== null){
-    //   return homeStack();
-    // }
-    // else{
-    //   return loginStack();
-    // }
+    if(this.state.loading === true){
+      return null;
+    }
+    if(this.state.user !== null){
+      return homeStack();
+    }
+    else{
+      return loginStack();
+    }
     console.log(yelpFusionKey);
     return (
       <View style={styles.container}>
@@ -81,8 +81,8 @@ function loginStack(){
   return(
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Register" component={Register} />
-        {/* <Stack.Screen name="Login" component={Login} /> */}
+        {/* <Stack.Screen name="Register" component={Register} /> */}
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     </NavigationContainer>
   )
