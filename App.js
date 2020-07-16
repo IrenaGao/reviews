@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React  from 'react';
+import { StyleSheet, Text, View} from 'react-native';
 
 //Firebase imports 
 import { app } from './src/Config';
@@ -11,9 +11,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 //Import Screens
-import Home from './screens/Home';
-import Register from './screens/Register';
-import Login from './screens/Login';
+// import Home from './screens/Home';
+// import Register from './screens/Register';
+// import Login from './screens/Login';
+
+import getEnvVars from './environment';
+const { yelpFusionKey } = getEnvVars();
 
 
 //Creating Navigation Stacks
@@ -29,37 +32,38 @@ export default class App extends React.Component {
     user: null,
   }
 
-  componentDidMount = async () => {
-    app.auth().onAuthStateChanged(async user => {
-      if(user){
-       let uid = app.auth().currentUser?.uid;
-       this.setState({user: user});
-      }
-      else{
-        this.setState({user : null});
-      }
+  // componentDidMount = async () => {
+  //   app.auth().onAuthStateChanged(async user => {
+  //     if(user){
+  //      let uid = app.auth().currentUser?.uid;
+  //      this.setState({user: user});
+  //     }
+  //     else{
+  //       this.setState({user : null});
+  //     }
 
-      if(this.state.isLoading === true){
-        this.setState({isLoading: false});
-      }
-    })
-  }
+  //     if(this.state.isLoading === true){
+  //       this.setState({isLoading: false});
+  //     }
+  //   })
+  // }
 
   render(){
-    if(this.state.loading === true){
-      return null;
-    }
-    if(this.state.user !== null){
-      return homeStack();
-    }
-    else{
-      return loginStack();
-    }
-    // return (
-    //   <View style={styles.container}>
-    //     <Text>Open up App.js to start working on your app!</Text>
-    //   </View>
-    // );
+    // if(this.state.loading === true){
+    //   return null;
+    // }
+    // if(this.state.user !== null){
+    //   return homeStack();
+    // }
+    // else{
+    //   return loginStack();
+    // }
+    console.log(yelpFusionKey);
+    return (
+      <View style={styles.container}>
+        <Text>Open up App.js to start working on your app!</Text>
+      </View>
+    );
   }
 }
 
