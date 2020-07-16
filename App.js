@@ -1,23 +1,24 @@
 import React  from 'react';
-import { StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View, Alert} from 'react-native';
 
 //Firebase imports 
 import { app } from './src/Config';
 import 'firebase/firestore';
+import * as Location from 'expo-location';
 
 //Navigations
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
+// Interactors
+import { interactor as getContentInteractor } from './integration/domain/GetContentInteractor';
+
+
 //Import Screens
 // import Home from './screens/Home';
 // import Register from './screens/Register';
 // import Login from './screens/Login';
-
-import getEnvVars from './environment';
-const { yelpFusionKey } = getEnvVars();
-
 
 //Creating Navigation Stacks
 const Stack = createStackNavigator();
@@ -30,23 +31,59 @@ export default class App extends React.Component {
   state = {
     isLoading : true,
     user: null,
+    status: null,
+    latitude: null,
+    longitude: null,
   }
 
-  // componentDidMount = async () => {
-  //   app.auth().onAuthStateChanged(async user => {
-  //     if(user){
-  //      let uid = app.auth().currentUser?.uid;
-  //      this.setState({user: user});
-  //     }
-  //     else{
-  //       this.setState({user : null});
-  //     }
+  componentDidMount = async () => {
+    //Set User's Location Permission
+    const { status } = await Location.requestPermissionsAsync();
+    if(status !== "granted"){
+      //Potention bug when user reject permission needa fix in future
+      Alert.alert("This Application Requires Location Permissions To Function Properly. Please Change Your Permission in Settings");
+      this.setState({status: "granted"});
+    }
 
-  //     if(this.state.isLoading === true){
-  //       this.setState({isLoading: false});
-  //     }
-  //   })
-  // }
+    let location = await Location.getLastKnownPositionAsync();
+    this.toLongitudeLatitude(location);
+
+    //Fetch Content
+    if(this.state.longitude !== null && this.state.latitude !== null){
+        if (!this.props.content) {
+          const latitude = this.state.latitude;
+          const longitude = this.state.longitude;
+          Promise
+            .all([
+              getContentInteractor(latitude, longitude),
+            ]) //Need to add redux stuff here
+      }
+    }
+
+    app.auth().onAuthStateChanged(async user => {
+      if(user){
+       let uid = app.auth().currentUser?.uid;
+       this.setState({user: user});
+      }
+      else{
+        this.setState({user : null});
+      }
+
+      if(this.state.isLoading === true){
+        this.setState({isLoading: false});
+      }
+    })
+  }
+
+  //Obtain the latitude and longitude of last known location
+  toLongitudeLatitude = (location) => {
+    if(location === null || location === undefined){
+      return;
+    }
+    let text = JSON.stringify(location);
+    this.setState({latitude: text.coords.latitude});
+    this.setState({longitude: text.coords.longitude});
+  }
 
   render(){
     // if(this.state.loading === true){
@@ -58,7 +95,6 @@ export default class App extends React.Component {
     // else{
     //   return loginStack();
     // }
-    console.log(yelpFusionKey);
     return (
       <View style={styles.container}>
         <Text>Open up App.js to start working on your app!</Text>
