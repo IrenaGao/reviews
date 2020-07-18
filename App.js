@@ -14,9 +14,16 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 // Interactors
 import { interactor as getContentInteractor } from './integration/domain/GetContentInteractor';
 
+//Redux ~ Actions
+import * as actions from './store/index';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import appReducer  from './store/reducer';
+
+const store = createStore(appReducer);
 
 //Import Screens
-// import Home from './screens/Home';
+import Home from './screens/Home';
 // import Register from './screens/Register';
 // import Login from './screens/Login';
 
@@ -31,35 +38,9 @@ export default class App extends React.Component {
   state = {
     isLoading : true,
     user: null,
-    status: null,
-    latitude: null,
-    longitude: null,
   }
 
   componentDidMount = async () => {
-    //Set User's Location Permission
-    const { status } = await Location.requestPermissionsAsync();
-    if(status !== "granted"){
-      //Potention bug when user reject permission needa fix in future
-      Alert.alert("This Application Requires Location Permissions To Function Properly. Please Change Your Permission in Settings");
-      this.setState({status: "granted"});
-    }
-
-    let location = await Location.getLastKnownPositionAsync();
-    this.toLongitudeLatitude(location);
-
-    //Fetch Content
-    if(this.state.longitude !== null && this.state.latitude !== null){
-        if (!this.props.content) {
-          const latitude = this.state.latitude;
-          const longitude = this.state.longitude;
-          Promise
-            .all([
-              getContentInteractor(latitude, longitude),
-            ]) //Need to add redux stuff here
-      }
-    }
-
     app.auth().onAuthStateChanged(async user => {
       if(user){
        let uid = app.auth().currentUser?.uid;
@@ -72,44 +53,39 @@ export default class App extends React.Component {
       if(this.state.isLoading === true){
         this.setState({isLoading: false});
       }
-    })
-  }
+    }) 
 
-  //Obtain the latitude and longitude of last known location
-  toLongitudeLatitude = (location) => {
-    if(location === null || location === undefined){
-      return;
-    }
-    let text = JSON.stringify(location);
-    this.setState({latitude: text.coords.latitude});
-    this.setState({longitude: text.coords.longitude});
-  }
 
+  }
   render(){
-    // if(this.state.loading === true){
-    //   return null;
-    // }
+    if(this.state.loading === true){
+      return null;
+    }
     // if(this.state.user !== null){
     //   return homeStack();
     // }
-    // else{
-    //   return loginStack();
-    // }
-    return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
+    else{
+      return homeStack();
+    }
+    // return (
+    //   <Provider store={store}>
+    //     <View>
+    //       <Text>Test</Text>
+    //     </View>
+    //   </Provider>
+    // );
   }
 }
 
 function homeStack(){
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Home" component={Home} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Home" component={Home} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   )
 }
 
@@ -132,3 +108,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
