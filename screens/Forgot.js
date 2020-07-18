@@ -14,17 +14,16 @@ import 'firebase/firestore';
 export default class Login extends React.Component {
     state={
         email:"",
-        password:""
     }
 
-    handleLogin = () => {
-        const { email, password } = this.state
-        firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password)
-            .then(() => this.props.navigation.navigate('Home'))
-            .catch(error => this.setState({ errorMessage: error.message }))
-    }
+    // handleLogin = () => {
+    //     const { email, password } = this.state
+    //     firebase
+    //         .auth()
+    //         .signInWithEmailAndPassword(email, password)
+    //         .then(() => this.props.navigation.navigate('Home'))
+    //         .catch(error => this.setState({ errorMessage: error.message }))
+    // }
     
     render(){
     return (
@@ -33,8 +32,8 @@ export default class Login extends React.Component {
             
             <View style={styles.inputContainer}>
                 <TextInput  
-                    style={styles.inputText}
                     autoCapitalize="none"
+                    style={styles.inputText}
                     placeholder="Email" 
                     placeholderTextColor="#003f5c"
                     onChangeText={text => this.setState({email:text})}
@@ -45,7 +44,6 @@ export default class Login extends React.Component {
                 <TextInput
                     secureTextEntry
                     style={styles.inputText}
-                    autoCapitalize="none"
                     placeholder="Password" 
                     placeholderTextColor="#003f5c"
                     onChangeText={text => this.setState({password:text})}
@@ -53,23 +51,24 @@ export default class Login extends React.Component {
             </View>
 
             <TouchableOpacity 
+                onPress={() => this.props.navigation.navigate("Forgot")}>
+                <Text style={styles.forgot}>Forgot Password?</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
                 style={styles.loginButton}
                 onPress={() => this.handleLogin}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-                onPress={() => this.props.navigation.navigate("Forgot")}>
-                <Text style={styles.otherOptionsText}>Forgot Password?</Text>
-            </TouchableOpacity>
             
             <TouchableOpacity 
+                style={styles.loginButton}
                 onPress={() => this.props.navigation.navigate("Register")}>
-                <Text style={styles.otherOptionsText}>Don't have an account? Register here!</Text>
+                <Text style={styles.loginText}>Sign Up</Text>
             </TouchableOpacity>
 
             <View>
-                <Text style={styles.otherOptionsText}>Sorry if the color scheme is terrible...</Text>
+                <Text style={styles.forgot}>Sorry if the color scheme is terrible...</Text>
             </View>
         </View>
     );
@@ -102,8 +101,8 @@ const styles = StyleSheet.create({
         height:50,
         color:"#757575"
     },
-    otherOptionsText: {
-        fontSize:20,
+    forgot: {
+        fontSize:15,
         color:"#E6E6E6"
     },
     loginButton: {
