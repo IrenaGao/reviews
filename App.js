@@ -11,9 +11,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 //Import Screens
-// import Home from './screens/Home';
+import Home from './screens/Home';
 import Register from './screens/Register';
 import Login from './screens/Login';
+import Forgot from './screens/Forgot';
 
 import getEnvVars from './environment';
 const { yelpFusionKey } = getEnvVars();
@@ -49,21 +50,20 @@ export default class App extends React.Component {
   }
 
   render(){
-    if(this.state.loading === true){
-      return null;
-    }
-    if(this.state.user !== null){
-      return homeStack();
-    }
-    else{
-      return loginStack();
-    }
-    console.log(yelpFusionKey);
-    return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
+    // if(this.state.loading === true){
+       return homeStack();
+    // }
+    // if(this.state.user !== null){
+    //   return homeStack();
+    // }
+    // else{
+    //   return loginStack();
+    // }
+    // return (
+    //   <View style={styles.container}>
+    //     <Text>Open up App.js to start working on your app!</Text>
+    //   </View>
+    // );
   }
 }
 
@@ -72,21 +72,24 @@ function homeStack(){
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Forgot" component={Forgot} />
       </Stack.Navigator>
     </NavigationContainer>
   )
 }
 
-function loginStack(){
-  return(
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        {/* <Stack.Screen name="Register" component={Register} /> */}
-        <Stack.Screen name="Login" component={Login} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
-}
+// function loginStack(){
+//   return(
+//     <NavigationContainer>
+//       <Stack.Navigator screenOptions={{headerShown: false}}>
+//         <Stack.Screen name="Register" component={Register} />
+//         <Stack.Screen name="Login" component={Login} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   )
+// }
 
 const styles = StyleSheet.create({
   container: {

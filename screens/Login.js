@@ -67,10 +67,6 @@ export default class Login extends React.Component {
                 onPress={() => this.props.navigation.navigate("Register")}>
                 <Text style={styles.otherOptionsText}>Don't have an account? Register here!</Text>
             </TouchableOpacity>
-
-            <View>
-                <Text style={styles.otherOptionsText}>Sorry if the color scheme is terrible...</Text>
-            </View>
         </View>
     );
   }

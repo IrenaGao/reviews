@@ -11,25 +11,20 @@ import {
 import { app } from '../src/Config';
 import 'firebase/firestore';
 
-export default class Login extends React.Component {
+export default class Forgot extends React.Component {
     state={
         email:"",
     }
-
-    // handleLogin = () => {
-    //     const { email, password } = this.state
-    //     firebase
-    //         .auth()
-    //         .signInWithEmailAndPassword(email, password)
-    //         .then(() => this.props.navigation.navigate('Home'))
-    //         .catch(error => this.setState({ errorMessage: error.message }))
-    // }
     
     render(){
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>REVIEWS</Text>
+            <Text style={styles.title}>Forgot Password?</Text>
             
+            <View style={styles.subtitleContainer}>
+                <Text style={styles.subtitle}>Enter your email so we can set you a password reset link.</Text>
+            </View>
+
             <View style={styles.inputContainer}>
                 <TextInput  
                     autoCapitalize="none"
@@ -40,43 +35,17 @@ export default class Login extends React.Component {
                 />
             </View>
 
-            <View style={styles.inputContainer}>
-                <TextInput
-                    secureTextEntry
-                    style={styles.inputText}
-                    placeholder="Password" 
-                    placeholderTextColor="#003f5c"
-                    onChangeText={text => this.setState({password:text})}
-                />
-            </View>
-
             <TouchableOpacity 
-                onPress={() => this.props.navigation.navigate("Forgot")}>
-                <Text style={styles.forgot}>Forgot Password?</Text>
+                style={styles.loginButton}>
+                <Text style={styles.loginText}>Send Link</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity 
-                style={styles.loginButton}
-                onPress={() => this.handleLogin}>
-                <Text style={styles.loginText}>LOGIN</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-                style={styles.loginButton}
-                onPress={() => this.props.navigation.navigate("Register")}>
-                <Text style={styles.loginText}>Sign Up</Text>
-            </TouchableOpacity>
-
-            <View>
-                <Text style={styles.forgot}>Sorry if the color scheme is terrible...</Text>
-            </View>
         </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-    container: {
+    titleContainer: {
         flex: 1,
         backgroundColor: '#4A00A9',
         alignItems: 'center',
@@ -84,7 +53,19 @@ const styles = StyleSheet.create({
     },
     title:{
         fontWeight:"bold",
-        fontSize:50,
+        fontSize:40,
+        color:"white",
+        marginBottom:40
+    },
+    subtitleContainer: {
+        flex: 1,
+        backgroundColor: '#4A00A9',
+        alignItems: 'center',
+        justifyContent: 'flex-start', 
+    },
+    subtitle:{
+        fontWeight:"bold",
+        fontSize:20,
         color:"white",
         marginBottom:40
     },
