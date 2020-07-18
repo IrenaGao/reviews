@@ -46,15 +46,15 @@ export default class App extends React.Component {
   }
 
   render(){
-    if(this.state.loading === true){
-      return null;
-    }
-    if(this.state.user !== null){
-      return homeStack();
-    }
-    else{
-      return loginStack();
-    }
+    // if(this.state.loading === true){
+       return homeStack();
+    // }
+    // if(this.state.user !== null){
+    //   return homeStack();
+    // }
+    // else{
+    //   return loginStack();
+    // }
     // return (
     //   <View style={styles.container}>
     //     <Text>Open up App.js to start working on your app!</Text>
@@ -67,22 +67,24 @@ function homeStack(){
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Register" component={Register} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
-}
-
-function loginStack(){
-  return(
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Register" component={Register} />
         {/* <Stack.Screen name="Login" component={Login} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   )
 }
+
+// function loginStack(){
+//   return(
+//     <NavigationContainer>
+//       <Stack.Navigator screenOptions={{headerShown: false}}>
+//         <Stack.Screen name="Register" component={Register} />
+//         <Stack.Screen name="Login" component={Login} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   )
+// }
 
 const styles = StyleSheet.create({
   container: {

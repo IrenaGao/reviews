@@ -16,20 +16,33 @@ export default class Register extends React.Component {
         super(props);
         this.state = {
             password: "",
-            email: "",
-            isRegistered: false
+            email: ""
+            // isRegistered: false
         };
     }
 
     handleRegister = () => {
+        const {email, password} = this.state
         app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then((userCredential) => {
                 app.firestore().doc('users/' + userCredential.user?.uid).set({
-                    email: userCredential.email,
-                    password: userCredential.userName
+                    email: this.state.email,
+                    userName: this.state.username,
+                    password: this.state.password
                 })
                 console.log('User account created');
             })
+        // app.auth()
+        //     .createUserWithEmailAndPassword(this.state.email, this.state.password)
+        //     .then( function(user) {
+        //         // var ref = firebase.database().ref("users").child(user.uid).set({
+        //         //     email: user.email,
+        //         //     uid: user.uid
+        //         // });
+        //         console.log(this.state.email, this.state.password)
+        //         console.log("hi")
+        //     })
+            .catch(error => console.log(error))
     }
 
     render() {
@@ -51,6 +64,16 @@ export default class Register extends React.Component {
                     />
                 </View>
                 <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Your username"
+                        maxLength={20}
+                        onChangeText={username => this.setState({username:username})}
+                        value={this.state.username}
+                        onBlor={Keyboard.dismiss}
+                    />
+                </View>
+                <View style={styles.inputContainer}>
                     <TextInput  
                         style={styles.textInput}
                         placeholder="Your password"
@@ -63,7 +86,7 @@ export default class Register extends React.Component {
                 <View style={styles.inputContainer}>
                     <TouchableOpacity
                         style={styles.saveButton}
-                        onPress = {() => this.handleRegister()}
+                        onPress = {this.handleRegister}
                     >
                         <Text style={styles.saveButtonText}>Create Account</Text>
                     </TouchableOpacity>
