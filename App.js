@@ -24,8 +24,9 @@ const store = createStore(appReducer);
 
 //Import Screens
 import Home from './screens/Home';
-// import Register from './screens/Register';
-// import Login from './screens/Login';
+import Register from './screens/Register';
+import Login from './screens/Login';
+import Forgot from './screens/Forgot';
 
 //Creating Navigation Stacks
 const Stack = createStackNavigator();
@@ -95,10 +96,22 @@ function loginStack(){
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Forgot" component={Forgot} />
       </Stack.Navigator>
     </NavigationContainer>
   )
 }
+
+// function loginStack(){
+//   return(
+//     <NavigationContainer>
+//       <Stack.Navigator screenOptions={{headerShown: false}}>
+//         <Stack.Screen name="Register" component={Register} />
+//         <Stack.Screen name="Login" component={Login} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   )
+// }
 
 const styles = StyleSheet.create({
   container: {
