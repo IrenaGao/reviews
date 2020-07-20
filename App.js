@@ -1,21 +1,16 @@
 import React  from 'react';
-import { StyleSheet, Text, View, Alert} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 //Firebase imports 
 import { app } from './src/Config';
 import 'firebase/firestore';
-import * as Location from 'expo-location';
 
 //Navigations
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
-// Interactors
-import { interactor as getContentInteractor } from './integration/domain/GetContentInteractor';
-
-//Redux ~ Actions
-import * as actions from './store/index';
+//Redux
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import appReducer  from './store/reducer';
@@ -62,19 +57,9 @@ export default class App extends React.Component {
     if(this.state.loading === true){
       return null;
     }
-    // if(this.state.user !== null){
-    //   return homeStack();
-    // }
     else{
       return homeStack();
     }
-    // return (
-    //   <Provider store={store}>
-    //     <View>
-    //       <Text>Test</Text>
-    //     </View>
-    //   </Provider>
-    // );
   }
 }
 
@@ -84,34 +69,14 @@ function homeStack(){
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Forgot" component={Forgot} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
   )
 }
-
-function loginStack(){
-  return(
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Forgot" component={Forgot} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
-}
-
-// function loginStack(){
-//   return(
-//     <NavigationContainer>
-//       <Stack.Navigator screenOptions={{headerShown: false}}>
-//         <Stack.Screen name="Register" component={Register} />
-//         <Stack.Screen name="Login" component={Login} />
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   )
-// }
 
 const styles = StyleSheet.create({
   container: {
