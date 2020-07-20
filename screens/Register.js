@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import {
     ScrollView,
     TextInput,
@@ -17,12 +17,10 @@ export default class Register extends React.Component {
         this.state = {
             password: "",
             email: ""
-            // isRegistered: false
         };
     }
 
     handleRegister = () => {
-        const {email, password} = this.state
         app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then((userCredential) => {
                 app.firestore().doc('users/' + userCredential.user?.uid).set({
@@ -30,18 +28,7 @@ export default class Register extends React.Component {
                     userName: this.state.username,
                     password: this.state.password
                 })
-                console.log('User account created');
             })
-        // app.auth()
-        //     .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        //     .then( function(user) {
-        //         // var ref = firebase.database().ref("users").child(user.uid).set({
-        //         //     email: user.email,
-        //         //     uid: user.uid
-        //         // });
-        //         console.log(this.state.email, this.state.password)
-        //         console.log("hi")
-        //     })
             .catch(error => console.log(error))
     }
 

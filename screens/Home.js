@@ -73,7 +73,7 @@ class Home extends React.Component{
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.loginbutton}
-                    // onPress = {() => this.props.navigation.navigate("Login")}
+                    onPress = {() => this.props.navigation.navigate("Login")}
                 >
                     <Text>Login</Text>
                 </TouchableOpacity>
