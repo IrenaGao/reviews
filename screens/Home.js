@@ -11,6 +11,9 @@ import { interactor as getContentInteractor } from '../integration/domain/GetCon
 import * as actions from '../store/index';
 import { connect } from 'react-redux';
 
+//Firebase
+import { app } from '../src/Config';
+
 class Home extends React.Component{
     state = {
         latitude: null,
@@ -21,6 +24,7 @@ class Home extends React.Component{
     }
     
     componentDidMount =  async () => {
+        //Did User Change Location?
         //Set User's Location Permission
         const { status } = await Location.requestPermissionsAsync();
         if(status !== "granted"){
@@ -45,8 +49,8 @@ class Home extends React.Component{
                 })
           }
         }
-        if(this.state.isLoading === false){
-            this.setState({isLoading: true});
+        if(this.state.isLoading){
+            this.setState({isLoading: false});
         }   
     }
 
@@ -60,23 +64,14 @@ class Home extends React.Component{
     }
     
     render(){
+        if(this.state.isLoading === true){
+            return(
+                <View><Text>Loading...</Text></View>
+            )
+        }
         return(
-            <View>
-                <Text style = {styles.header}>
-                    Welcome to Reviews! 
-                </Text>
-                <TouchableOpacity
-                    style={styles.signupbutton}
-                    onPress = {() => this.props.navigation.navigate("Register")}
-                >
-                    <Text>Sign up</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.loginbutton}
-                    onPress = {() => this.props.navigation.navigate("Login")}
-                >
-                    <Text>Login</Text>
-                </TouchableOpacity>
+            <View style={styles.container}>
+                <Text style={{textAlign: 'center'}}>Home Screen</Text>
             </View>
         );
     }
@@ -95,20 +90,9 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const styles = StyleSheet.create({
-    header: {
-        fontSize: 25,
-        textAlign: 'center',
-        marginTop: 150,
-        fontWeight: 'bold'
-    },
-    signupbutton: {
-        marginTop: 100,
-        borderStyle: 'solid',
-        marginLeft: "40%"
-    },
-    loginbutton: {
-        marginTop: 25,
-        marginLeft: '40%'
+    container:{
+        flex: 1,
+        justifyContent: "center"
     }
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

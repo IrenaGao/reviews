@@ -22,10 +22,13 @@ import Home from './screens/Home';
 import Register from './screens/Register';
 import Login from './screens/Login';
 import Forgot from './screens/Forgot';
+import { SideDrawer } from './components/SideDrawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 //Creating Navigation Stacks
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 export default class App extends React.Component {
   uid = app.auth().currentUser?.uid;
@@ -34,6 +37,8 @@ export default class App extends React.Component {
   state = {
     isLoading : true,
     user: null,
+    userName: null,
+    userEmail: null,
   }
 
   componentDidMount = async () => {
@@ -51,31 +56,42 @@ export default class App extends React.Component {
       }
     }) 
 
-
+    if(this.uid !== undefined){
+      await app.firestore().doc('/users/' + this.uid).get({source: 'default'})
+      .then(user => {
+        this.setState({userName: user.userName});
+        this.setState({userEmail: user.userEmail});
+      })
+    }
   }
+
   render(){
     if(this.state.loading === true){
       return null;
     }
     else{
-      return homeStack();
+      return homeStack(this.state);
     }
   }
 }
 
-function homeStack(){
+function homeStack(state){
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Forgot" component={Forgot} />
-        </Stack.Navigator>
+        <Drawer.Navigator screenOptions={{headerShown: false}} drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
+          <Drawer.Screen name="Home" component={Home} />
+          <Drawer.Screen name="Register" component={Register} />
+          <Drawer.Screen name="Login" component={Login} />
+          <Drawer.Screen name="Forgot" component={Forgot} />
+        </Drawer.Navigator>
       </NavigationContainer>
     </Provider>
   )
+}
+
+async function handleLogout(){
+  await app.auth().signOut();
 }
 
 const styles = StyleSheet.create({
