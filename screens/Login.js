@@ -4,10 +4,10 @@ import {
     Text, 
     View, 
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
  } from 'react-native';
 
- //Firebase imports 
 import { app } from '../src/Config';
 
 export default class Login extends React.Component {
@@ -20,7 +20,7 @@ export default class Login extends React.Component {
         const { email, password } = this.state
         app.auth().signInWithEmailAndPassword(email, password)
             .then(() => this.props.navigation.navigate('Home'))
-            .catch(error => console.log(error)) //this.setState({ errorMessage: error.message })
+            .catch(error => Alert.alert(error.message)); //console.log(error)
     }
     
     render(){

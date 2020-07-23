@@ -39,9 +39,9 @@ export default class Register extends React.Component {
                 this.props.navigation.navigate('Home');
                 console.log('User account created');
             })
-            .catch(error => console.log(error));
+            .catch(error => Alert.alert(error.message)); //console.log(error)
         } else {
-            Alert.alert('Username is taken.');
+            Alert.alert('This username already exists! Please choose another.');
             return;
         };
     }
