@@ -9,7 +9,7 @@ import {
 
  //Firebase imports 
 import { app } from '../src/Config';
-import 'firebase/firestore';
+// import 'firebase/firestore';
 
 export default class Login extends React.Component {
     state={
@@ -19,11 +19,9 @@ export default class Login extends React.Component {
 
     handleLogin = () => {
         const { email, password } = this.state
-        firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password)
+        app.auth().signInWithEmailAndPassword(email, password)
             .then(() => this.props.navigation.navigate('Home'))
-            .catch(error => this.setState({ errorMessage: error.message }))
+            .catch(error => console.log(error)) //this.setState({ errorMessage: error.message })
     }
     
     render(){
@@ -54,7 +52,7 @@ export default class Login extends React.Component {
 
             <TouchableOpacity 
                 style={styles.loginButton}
-                onPress={() => this.handleLogin}>
+                onPress={this.handleLogin}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
 
@@ -99,7 +97,7 @@ const styles = StyleSheet.create({
         color:"#757575"
     },
     otherOptionsText: {
-        fontSize:20,
+        fontSize:15,
         color:"#E6E6E6"
     },
     loginButton: {

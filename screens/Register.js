@@ -15,23 +15,54 @@ export default class Register extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            email: "",
             password: "",
-            email: ""
+            username: ""
             // isRegistered: false
         };
     }
 
     handleRegister = () => {
-        const {email, password} = this.state
-        app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then((userCredential) => {
-                app.firestore().doc('users/' + userCredential.user?.uid).set({
-                    email: this.state.email,
-                    userName: this.state.username,
-                    password: this.state.password
-                })
-                console.log('User account created');
-            })
+        const {email, password, username} = this.state
+
+        let rootRef = app.database().ref();
+        rootRef
+        .child('users')
+        .orderByChild('userName')
+        .equalTo(username)
+        .once('value')
+        .then(snapshot => {
+            if (snapshot.exists()) {
+                let userData = snapshot.val();
+                console.log(userData);
+                Alert.alert('Username is taken.');
+                return userData;
+            } else {
+                app
+                    .auth()
+                    .createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        app.firestore().doc('users/' + userCredential.user?.uid).set({
+                            email: email,
+                            userName: username,
+                            password: password
+                        })
+                        this.props.navigation.navigate('Home');
+                        console.log('User account created');
+                    })
+                    .catch(error => console.log(error));
+            }
+        });
+
+        // app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+        //     .then((userCredential) => {
+        //         app.firestore().doc('users/' + userCredential.user?.uid).set({
+        //             email: this.state.email,
+        //             userName: this.state.username,
+        //             password: this.state.password
+        //         })
+        //         console.log('User account created');
+        //     })
         // app.auth()
         //     .createUserWithEmailAndPassword(this.state.email, this.state.password)
         //     .then( function(user) {
@@ -42,7 +73,6 @@ export default class Register extends React.Component {
         //         console.log(this.state.email, this.state.password)
         //         console.log("hi")
         //     })
-            .catch(error => console.log(error))
     }
 
     render() {
