@@ -1,73 +1,87 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import {
-    ScrollView,
+import { StyleSheet, 
+    Text, 
+    View, 
+    Alert,
     TextInput,
-    Keyboard,
     TouchableOpacity
 } from 'react-native';
 
-//Firebase imports 
 import { app } from '../src/Config';
-import 'firebase/firestore';
+
+db = app.firestore()
 
 export default class Register extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            email: "",
             password: "",
-            email: ""
+            username: ""
         };
     }
 
-    handleRegister = () => {
-        app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+    handleRegister = async () => {
+        const {email, password, username} = this.state
+
+        const userNameRef = db.collection('users');
+        const snapshot = await userNameRef.where('userName', '==', username).get();
+        if (snapshot.empty) {
+            app
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 app.firestore().doc('users/' + userCredential.user?.uid).set({
-                    email: this.state.email,
-                    userName: this.state.username,
-                    password: this.state.password
+                    email: email,
+                    userName: username,
+                    password: password
                 })
+                this.props.navigation.navigate('Home');
+                console.log('User account created');
             })
-            .catch(error => console.log(error))
+            .catch(error => Alert.alert(error.message)); //console.log(error)
+        } else {
+            Alert.alert('This username already exists! Please choose another.');
+            return;
+        };
     }
 
     render() {
         return (
-            <ScrollView>
+            <View>
                 <View style={styles.container}>
-                    <View>
-                        <Text style={styles.header}>Registration</Text>
-                    </View>
+                    <Text style={styles.header}>Registration</Text>
                 </View>
                 <View style={styles.inputContainer}>
                     <TextInput  
                         style={styles.textInput}
-                        placeholder="Your email"
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        placeholder="Email"
                         maxLength={20}
                         onChangeText={email => this.setState({email:email})}                        
                         value={this.state.email}
-                        onBlur={Keyboard.dismiss}
                     />
                 </View>
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.textInput}
-                        placeholder="Your username"
+                        autoCapitalize="none"
+                        placeholder="Username"
                         maxLength={20}
                         onChangeText={username => this.setState({username:username})}
                         value={this.state.username}
-                        onBlor={Keyboard.dismiss}
                     />
                 </View>
                 <View style={styles.inputContainer}>
                     <TextInput  
+                        secureTextEntry
+                        autoCapitalize="none"
                         style={styles.textInput}
-                        placeholder="Your password"
+                        placeholder="Password"
                         maxLength={20}
                         onChangeText={password => this.setState({password:password})}                        
                         value={this.state.password}
-                        onBlur={Keyboard.dismiss}
                     />
                 </View>
                 <View style={styles.inputContainer}>
@@ -78,7 +92,7 @@ export default class Register extends React.Component {
                         <Text style={styles.saveButtonText}>Create Account</Text>
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
+            </View>
         );
     }
 }
@@ -86,7 +100,8 @@ export default class Register extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 45,
+        paddingTop: 30,
+        paddingBottom: 40,
         backgroundColor: '#F5FCFF',
     },
     textInput: {
@@ -101,11 +116,10 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 25,
         textAlign: 'center',
-        margin: 10,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     inputContainer: {
-        paddingTop: 15
+        paddingTop: 10,
     },
     saveButton: {
         borderWidth: 1,
