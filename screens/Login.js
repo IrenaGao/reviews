@@ -9,7 +9,6 @@ import {
 
  //Firebase imports 
 import { app } from '../src/Config';
-// import 'firebase/firestore';
 
 export default class Login extends React.Component {
     state={
@@ -33,6 +32,7 @@ export default class Login extends React.Component {
                 <TextInput  
                     style={styles.inputText}
                     autoCapitalize="none"
+                    keyboardType="email-address"
                     placeholder="Email" 
                     placeholderTextColor="#003f5c"
                     onChangeText={text => this.setState({email:text})}
