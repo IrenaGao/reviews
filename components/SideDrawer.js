@@ -9,7 +9,7 @@ export function SideDrawer(props){
                     <TouchableOpacity onPress={() => props.navigation.navigate("Register")}>
                         <Text>Register</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => props.navigation.navigate("Login")}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate("Sign In")}>
                         <Text>Login</Text>
                     </TouchableOpacity>
                 </View>

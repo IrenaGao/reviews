@@ -6,6 +6,7 @@ import * as Location from 'expo-location';
 
 // Interactors
 import { interactor as getContentInteractor } from '../integration/domain/GetContentInteractor';
+import { interactor as getBusinessesInteractor } from './domain/GetBusinessesInteractor';
 
 //Redux 
 import * as actions from '../store/index';
@@ -14,16 +15,18 @@ import { connect } from 'react-redux';
 //Firebase
 import { app } from '../src/Config';
 
+//Components
+import HomeCard from './HomeLayer/Home';
+
 class Home extends React.Component{
     state = {
         latitude: null,
         longitude: null,
         status: null,
         isLoading: true,
-        hadFetch: false,
     }
     
-    componentDidMount =  async () => {
+    componentDidMount = async () => {
         //Did User Change Location?
         //Set User's Location Permission
         const { status } = await Location.requestPermissionsAsync();
@@ -31,11 +34,12 @@ class Home extends React.Component{
             Alert.alert("This Application Requires Location Permissions To Function Properly. Please Change Your Permission in Settings");
             this.setState({status: "granted"});
         }
-        let location = await Location.getLastKnownPositionAsync();
+        let location = await Location.getCurrentPositionAsync();
         this.toLongitudeLatitude(location);
+        console.log(this.state.longitude);
 
         //Fetch Data
-        if(this.state.longitude !== null && this.state.latitude !== null && this.state.hadFetch === false){
+        if(this.state.longitude !== null && this.state.latitude !== null){
             if (!this.props.content) {
               const latitude = this.state.latitude;
               const longitude = this.state.longitude;
@@ -45,13 +49,9 @@ class Home extends React.Component{
                 ]) 
                 .then(([content]) => {
                   this.props.storeContent(content);
-                  this.setState({hadFetch: true});
                 })
           }
-        }
-        if(this.state.isLoading){
-            this.setState({isLoading: false});
-        }   
+        }        
     }
 
     //Obtain the latitude and longitude of last known location
@@ -64,14 +64,16 @@ class Home extends React.Component{
     }
     
     render(){
-        if(this.state.isLoading === true){
+        if(this.props.content === null){
             return(
-                <View><Text>Loading...</Text></View>
+                <View>
+                    <Text>Loading...</Text>
+                </View>
             )
         }
         return(
             <View style={styles.container}>
-                <Text style={{textAlign: 'center'}}>Home Screen</Text>
+                <HomeCard cardConfigs={getBusinessesInteractor(this.props.content.businesses)} />
             </View>
         );
     }
