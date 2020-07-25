@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Alert, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Alert, FlatList, TouchableOpacity} from 'react-native';
 
 //Location
 import * as Location from 'expo-location';
@@ -17,6 +17,7 @@ import { app } from '../src/Config';
 
 //Components
 import HomeCard from './HomeLayer/Home';
+import Card from '../components/RestaurantCard';
 
 class Home extends React.Component{
     state = {
@@ -24,6 +25,8 @@ class Home extends React.Component{
         longitude: null,
         status: null,
         isLoading: true,
+        dataCountEnd: 10,
+        dataCountStart: 0,
     }
     
     componentDidMount = async () => {
@@ -36,7 +39,6 @@ class Home extends React.Component{
         }
         let location = await Location.getCurrentPositionAsync();
         this.toLongitudeLatitude(location);
-        console.log(this.state.longitude);
 
         //Fetch Data
         if(this.state.longitude !== null && this.state.latitude !== null){
@@ -62,7 +64,11 @@ class Home extends React.Component{
         this.setState({latitude: location.coords.latitude});
         this.setState({longitude: location.coords.longitude});
     }
-    
+
+    handleLoadMore = () => {
+        this.setState({dataCountEnd: this.state.dataCountEnd + 10});
+    }
+ 
     render(){
         if(this.props.content === null){
             return(
@@ -73,7 +79,21 @@ class Home extends React.Component{
         }
         return(
             <View style={styles.container}>
-                <HomeCard cardConfigs={getBusinessesInteractor(this.props.content.businesses)} />
+                <Text style={styles.header}>Restaurants</Text>
+                <FlatList
+                    data={getBusinessesInteractor(this.props.content.businesses).slice(0, this.state.dataCountEnd)}
+                    extraData={getBusinessesInteractor(this.props.content.businesses)}
+                    renderItem={({ item }) =>
+                        <Card
+                            {...this.props} 
+                            name={item.restaurantName} 
+                            image={item.image} 
+                            location={item.location}
+                        />
+                    }
+                    keyExtractor={(item) => item.restaurantID}
+                    onEndReached={this.handleLoadMore}
+                />
             </View>
         );
     }
@@ -94,7 +114,12 @@ const mapDispatchToProps = (dispatch) => {
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        justifyContent: "center"
+    },
+    header:{
+        fontWeight: 'bold',
+        fontSize: 26,
+        marginTop: '5%',
+        marginLeft: '3%'
     }
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

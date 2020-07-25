@@ -4,7 +4,7 @@ export const interactor = (businesses) => {
             restaurantID: business.id,
             restaurantName: business.name,
             image: business.image_url,
-            location: `${business.location.address1}, ${business.location.city}, ${business.location.zip_code}`
+            location: `${business.location.address1}, ${business.location.city}`
         };
     });
     return cardsConfig;
