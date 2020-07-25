@@ -4,11 +4,11 @@ import { StyleSheet,
     View, 
     Alert,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    Keyboard
 } from 'react-native';
 
 import { app } from '../src/Config';
-
 db = app.firestore()
 
 export default class Register extends React.Component {
@@ -24,8 +24,8 @@ export default class Register extends React.Component {
     handleRegister = async () => {
         const {email, password, username} = this.state
 
-        const userNameRef = db.collection('users');
-        const snapshot = await userNameRef.where('userName', '==', username).get();
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.where('userName', '==', username).get();
         if (snapshot.empty) {
             app
             .auth()
@@ -41,7 +41,7 @@ export default class Register extends React.Component {
             })
             .catch(error => Alert.alert(error.message)); //console.log(error)
         } else {
-            Alert.alert('This username already exists! Please choose another.');
+            Alert.alert('This username already exists, please choose another.');
             return;
         };
     }
@@ -59,6 +59,7 @@ export default class Register extends React.Component {
                         keyboardType="email-address"
                         placeholder="Email"
                         maxLength={20}
+                        onBlur={Keyboard.dismiss}
                         onChangeText={email => this.setState({email:email})}                        
                         value={this.state.email}
                     />
@@ -69,6 +70,7 @@ export default class Register extends React.Component {
                         autoCapitalize="none"
                         placeholder="Username"
                         maxLength={20}
+                        onBlur={Keyboard.dismiss}
                         onChangeText={username => this.setState({username:username})}
                         value={this.state.username}
                     />
@@ -80,6 +82,7 @@ export default class Register extends React.Component {
                         style={styles.textInput}
                         placeholder="Password"
                         maxLength={20}
+                        onBlur={Keyboard.dismiss}
                         onChangeText={password => this.setState({password:password})}                        
                         value={this.state.password}
                     />
