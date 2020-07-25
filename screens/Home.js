@@ -16,7 +16,6 @@ import { connect } from 'react-redux';
 import { app } from '../src/Config';
 
 //Components
-import HomeCard from './HomeLayer/Home';
 import Card from '../components/RestaurantCard';
 
 class Home extends React.Component{
