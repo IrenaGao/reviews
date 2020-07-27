@@ -60,7 +60,7 @@ class Home extends React.Component{
         let location = await Location.getLastKnownPositionAsync();
         this.toLongitudeLatitude(location);
 
-        //Fetch Data
+        //Fetch Data then save to redux
         if(this.state.longitude !== null && this.state.latitude !== null && this.getDataLocally() === null){
             if (!this.props.content) {
               const latitude = this.state.latitude;
@@ -76,7 +76,8 @@ class Home extends React.Component{
                     this.saveDataLocally(this.props.content);
                 })
           }
-        } 
+        }
+        //If we have local data, we want to save that local data to redux
         else{
             const data = await this.getDataLocally();
             this.props.storeContent(data);
@@ -92,6 +93,7 @@ class Home extends React.Component{
         this.setState({longitude: location.coords.longitude});
     }
 
+    //Load More entry on flatlist end
     handleLoadMore = () => {
         this.setState({dataCountEnd: this.state.dataCountEnd + 10});
     }
