@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View, Alert, FlatList, TouchableOpacity} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 //Location
 import * as Location from 'expo-location';
@@ -28,6 +29,26 @@ class Home extends React.Component{
         dataCountStart: 0,
     }
     
+    saveDataLocally = async (data) => {
+        try{
+            const jsonData = JSON.stringify(data);
+            await AsyncStorage.setItem('restaurants', jsonData);
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    getDataLocally = async () => {
+        try{
+            const data = await AsyncStorage.getItem('restaurants');
+            return data !== null ? JSON.parse(data) : null;
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
     componentDidMount = async () => {
         //Did User Change Location?
         //Set User's Location Permission
@@ -40,7 +61,7 @@ class Home extends React.Component{
         this.toLongitudeLatitude(location);
 
         //Fetch Data
-        if(this.state.longitude !== null && this.state.latitude !== null){
+        if(this.state.longitude !== null && this.state.latitude !== null && this.getDataLocally() === null){
             if (!this.props.content) {
               const latitude = this.state.latitude;
               const longitude = this.state.longitude;
@@ -51,8 +72,15 @@ class Home extends React.Component{
                 .then(([content]) => {
                   this.props.storeContent(content);
                 })
+                .then(() => {
+                    this.saveDataLocally(this.props.content);
+                })
           }
-        }        
+        } 
+        else{
+            const data = await this.getDataLocally();
+            this.props.storeContent(data);
+        }
     }
 
     //Obtain the latitude and longitude of last known location
