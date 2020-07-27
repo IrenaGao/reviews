@@ -36,7 +36,7 @@ class Home extends React.Component{
             Alert.alert("This Application Requires Location Permissions To Function Properly. Please Change Your Permission in Settings");
             this.setState({status: "granted"});
         }
-        let location = await Location.getCurrentPositionAsync();
+        let location = await Location.getLastKnownPositionAsync();
         this.toLongitudeLatitude(location);
 
         //Fetch Data
