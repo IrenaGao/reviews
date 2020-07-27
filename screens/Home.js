@@ -57,7 +57,7 @@ class Home extends React.Component{
             Alert.alert("This Application Requires Location Permissions To Function Properly. Please Change Your Permission in Settings");
             this.setState({status: "granted"});
         }
-        let location = await Location.getLastKnownPositionAsync();
+        let location = await Location.getCurrentPositionAsync();
         this.toLongitudeLatitude(location);
 
         //Fetch Data then save to redux
@@ -115,6 +115,7 @@ class Home extends React.Component{
                     renderItem={({ item }) =>
                         <Card
                             {...this.props} 
+                            id={item.restaurantID}
                             name={item.restaurantName} 
                             image={item.image} 
                             location={item.location}

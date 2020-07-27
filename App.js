@@ -22,6 +22,7 @@ import Home from './screens/Home';
 import Register from './screens/Register';
 import Login from './screens/Login';
 import Forgot from './screens/Forgot';
+import RestaurantOverview from './screens/RestaurantOverview';
 import { SideDrawer } from './components/SideDrawer';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
@@ -29,6 +30,15 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+
+const HomeStackScreen = () => (
+  <Stack.Navigator screenOptions={{
+    headerShown: false
+  }}>
+    <Stack.Screen name="Home" component={Home} />
+    <Stack.Screen name="RestaurantOverview" component={RestaurantOverview} unmountOnBlur={true} options={{ unmountOnBlur: true }} />
+  </Stack.Navigator>
+)
 
 export default class App extends React.Component {
   uid = app.auth().currentUser?.uid;
@@ -80,7 +90,7 @@ function homeStack(state){
     <Provider store={store}>
       <NavigationContainer>
         <Drawer.Navigator screenOptions={{headerShown: false}} drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
-          <Drawer.Screen name="Home" component={Home} />
+          <Drawer.Screen name="Home" component={HomeStackScreen} />
           <Drawer.Screen name="Register" component={Register} />
           <Drawer.Screen name="Login" component={Login} />
           <Drawer.Screen name="Forgot" component={Forgot} />
