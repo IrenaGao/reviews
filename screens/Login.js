@@ -5,10 +5,8 @@ import {
     View, 
     TextInput,
     TouchableOpacity,
-    Alert
+    Keyboard
  } from 'react-native';
-
-import { app } from '../src/Config';
 
 export default class Login extends React.Component {
     state={
@@ -18,7 +16,9 @@ export default class Login extends React.Component {
 
     handleLogin = () => {
         const { email, password } = this.state
-        app.auth().signInWithEmailAndPassword(email, password)
+        firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password)
             .then(() => this.props.navigation.navigate('Home'))
             .catch(error => Alert.alert(error.message)); //console.log(error)
     }
@@ -32,9 +32,10 @@ export default class Login extends React.Component {
                 <TextInput  
                     style={styles.inputText}
                     autoCapitalize="none"
-                    keyboardType="email-address"
                     placeholder="Email" 
+                    keyboardType="email-address"
                     placeholderTextColor="#003f5c"
+                    onBlur={Keyboard.dismiss}
                     onChangeText={text => this.setState({email:text})}
                 />
             </View>
@@ -46,13 +47,14 @@ export default class Login extends React.Component {
                     autoCapitalize="none"
                     placeholder="Password" 
                     placeholderTextColor="#003f5c"
+                    onBlur={Keyboard.dismiss}
                     onChangeText={text => this.setState({password:text})}
                 />
             </View>
 
             <TouchableOpacity 
                 style={styles.loginButton}
-                onPress={this.handleLogin}>
+                onPress={() => this.handleLogin}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
 
@@ -97,7 +99,7 @@ const styles = StyleSheet.create({
         color:"#757575"
     },
     otherOptionsText: {
-        fontSize:15,
+        fontSize:18,
         color:"#E6E6E6"
     },
     loginButton: {
