@@ -1,15 +1,22 @@
 import React from 'react';
-import {StyleSheet, Text, View, Alert, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Alert, FlatList, TouchableOpacity} from 'react-native';
 
 //Location
 import * as Location from 'expo-location';
 
 // Interactors
 import { interactor as getContentInteractor } from '../integration/domain/GetContentInteractor';
+import { interactor as getBusinessesInteractor } from './domain/GetBusinessesInteractor';
 
 //Redux 
 import * as actions from '../store/index';
 import { connect } from 'react-redux';
+
+//Firebase
+import { app } from '../src/Config';
+
+//Components
+import Card from '../components/RestaurantCard';
 
 class Home extends React.Component{
     state = {
@@ -17,10 +24,12 @@ class Home extends React.Component{
         longitude: null,
         status: null,
         isLoading: true,
-        hadFetch: false,
+        dataCountEnd: 10,
+        dataCountStart: 0,
     }
     
-    componentDidMount =  async () => {
+    componentDidMount = async () => {
+        //Did User Change Location?
         //Set User's Location Permission
         const { status } = await Location.requestPermissionsAsync();
         if(status !== "granted"){
@@ -31,7 +40,7 @@ class Home extends React.Component{
         this.toLongitudeLatitude(location);
 
         //Fetch Data
-        if(this.state.longitude !== null && this.state.latitude !== null && this.state.hadFetch === false){
+        if(this.state.longitude !== null && this.state.latitude !== null){
             if (!this.props.content) {
               const latitude = this.state.latitude;
               const longitude = this.state.longitude;
@@ -41,13 +50,9 @@ class Home extends React.Component{
                 ]) 
                 .then(([content]) => {
                   this.props.storeContent(content);
-                  this.setState({hadFetch: true});
                 })
           }
-        }
-        if(this.state.isLoading === false){
-            this.setState({isLoading: true});
-        }   
+        }        
     }
 
     //Obtain the latitude and longitude of last known location
@@ -58,25 +63,36 @@ class Home extends React.Component{
         this.setState({latitude: location.coords.latitude});
         this.setState({longitude: location.coords.longitude});
     }
-    
+
+    handleLoadMore = () => {
+        this.setState({dataCountEnd: this.state.dataCountEnd + 10});
+    }
+ 
     render(){
+        if(this.props.content === null){
+            return(
+                <View>
+                    <Text>Loading...</Text>
+                </View>
+            )
+        }
         return(
-            <View>
-                <Text style = {styles.header}>
-                    Welcome to Reviews! 
-                </Text>
-                <TouchableOpacity
-                    style={styles.signupbutton}
-                    onPress = {() => this.props.navigation.navigate("Register")}
-                >
-                    <Text>Sign up</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.loginbutton}
-                    onPress = {() => this.props.navigation.navigate("Login")}
-                >
-                    <Text>Login</Text>
-                </TouchableOpacity>
+            <View style={styles.container}>
+                <Text style={styles.header}>Restaurants</Text>
+                <FlatList
+                    data={getBusinessesInteractor(this.props.content.businesses).slice(0, this.state.dataCountEnd)}
+                    extraData={getBusinessesInteractor(this.props.content.businesses)}
+                    renderItem={({ item }) =>
+                        <Card
+                            {...this.props} 
+                            name={item.restaurantName} 
+                            image={item.image} 
+                            location={item.location}
+                        />
+                    }
+                    keyExtractor={(item) => item.restaurantID}
+                    onEndReached={this.handleLoadMore}
+                />
             </View>
         );
     }
@@ -95,20 +111,14 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const styles = StyleSheet.create({
-    header: {
-        fontSize: 25,
-        textAlign: 'center',
-        marginTop: 150,
-        fontWeight: 'bold'
+    container:{
+        flex: 1,
     },
-    signupbutton: {
-        marginTop: 100,
-        borderStyle: 'solid',
-        marginLeft: "40%"
-    },
-    loginbutton: {
-        marginTop: 25,
-        marginLeft: '40%'
+    header:{
+        fontWeight: 'bold',
+        fontSize: 26,
+        marginTop: '5%',
+        marginLeft: '3%'
     }
 })
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
