@@ -10,6 +10,7 @@ import {
  //Firebase imports 
 import { app } from '../src/Config';
 import 'firebase/firestore';
+import firebase from 'firebase';
 
 export default class Login extends React.Component {
     state={
@@ -17,14 +18,14 @@ export default class Login extends React.Component {
         password:""
     }
 
-    handleLogin = () => {
+    handleLogin = async () => {
         const { email, password } = this.state
-        firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password)
+        app.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(async () => {
+            app.auth().signInWithEmailAndPassword(email, password)
             .then(() => this.props.navigation.navigate('Home'))
-            .catch(error => this.setState({ errorMessage: error.message }))
-    }
+            .catch(error => this.setState({ errorMessage: error.message }));
+        }
+    )}
     
     render(){
     return (
@@ -54,7 +55,7 @@ export default class Login extends React.Component {
 
             <TouchableOpacity 
                 style={styles.loginButton}
-                onPress={() => this.handleLogin}>
+                onPress={async () => await  this.handleLogin()}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
 

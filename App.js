@@ -41,38 +41,37 @@ const HomeStackScreen = () => (
 )
 
 export default class App extends React.Component {
-  uid = app.auth().currentUser?.uid;
-  ref = app.firestore().doc('/users/' + this.uid);
-
   state = {
+    uid: null,
     isLoading : true,
-    user: null,
     userName: null,
     userEmail: null,
   }
 
   componentDidMount = async () => {
+    console.log("mount");
     app.auth().onAuthStateChanged(async user => {
       if(user){
-       let uid = app.auth().currentUser?.uid;
-       this.setState({user: user});
+       this.setState({uid: app.auth().currentUser?.uid});
       }
       else{
-        this.setState({user : null});
+        this.setState({uid : null});
+        this.setState({userName: null});
+        this.setState({userEmail: null});
+      }
+
+      if(this.state.uid !== null){
+        await app.firestore().doc('users/' + this.state.uid).get({source: 'default'})
+          .then(user => {
+            this.setState({userName: user.get('userName')});
+            this.setState({userEmail: user.get('email')});
+          })
       }
 
       if(this.state.isLoading === true){
         this.setState({isLoading: false});
       }
     }) 
-
-    if(this.uid !== undefined){
-      await app.firestore().doc('/users/' + this.uid).get({source: 'default'})
-      .then(user => {
-        this.setState({userName: user.userName});
-        this.setState({userEmail: user.userEmail});
-      })
-    }
   }
 
   render(){
@@ -100,8 +99,9 @@ function homeStack(state){
   )
 }
 
-async function handleLogout(){
-  await app.auth().signOut();
+async function handleLogout(props){
+  await app.auth().signOut()
+    .then(() => props.navigation.navigate('Home'));
 }
 
 const styles = StyleSheet.create({

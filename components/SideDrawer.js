@@ -9,7 +9,7 @@ export function SideDrawer(props){
                     <TouchableOpacity onPress={() => props.navigation.navigate("Register")}>
                         <Text>Register</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => props.navigation.navigate("Sign In")}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate("Login")}>
                         <Text>Login</Text>
                     </TouchableOpacity>
                 </View>
@@ -20,7 +20,7 @@ export function SideDrawer(props){
         <View style={styles.container}>
             <Text>{props.userName}</Text>
             <Text>{props.userEmail}</Text>
-            <TouchableOpacity style={{marginTop: 200}} onPress={() => props.handleLogout()}>
+            <TouchableOpacity style={{marginTop: 200}} onPress={async () => await props.handleLogout(props)}>
                 <Text>Log Out</Text>
             </TouchableOpacity>
         </View>
