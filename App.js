@@ -49,7 +49,6 @@ export default class App extends React.Component {
   }
 
   componentDidMount = async () => {
-    console.log("mount");
     app.auth().onAuthStateChanged(async user => {
       if(user){
        this.setState({uid: app.auth().currentUser?.uid});
