@@ -17,12 +17,6 @@ import { connect } from 'react-redux';
 //Search Bar
 import { SearchBar } from 'react-native-elements';
 
-// import {
-//     ScrollView,
-//     TextInput,
-//     Keyboard,
-//     TouchableOpacity
-// } from 'react-native';
 //Firebase
 import { app } from '../src/Config';
 
@@ -46,7 +40,6 @@ class Home extends React.Component{
 
     updateSearch = (search) => {
         this.setState({ search });
-        console.log(search);
         let text = search.toLowerCase();
         let restaurants = getRestaurantInteractor(this.props.content.businesses);
         const filteredNamesTemp = restaurants.filter((item) => {
