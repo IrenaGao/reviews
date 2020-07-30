@@ -4,12 +4,15 @@ import {
     Text, 
     View, 
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    Keyboard,
+    Alert
  } from 'react-native';
 
  //Firebase imports 
 import { app } from '../src/Config';
 import 'firebase/firestore';
+import firebase from 'firebase';
 
 export default class Login extends React.Component {
     state={
@@ -17,14 +20,14 @@ export default class Login extends React.Component {
         password:""
     }
 
-    handleLogin = () => {
+    handleLogin = async () => {
         const { email, password } = this.state
-        firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password)
+        app.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(async () => {
+            app.auth().signInWithEmailAndPassword(email, password)
             .then(() => this.props.navigation.navigate('Home'))
-            .catch(error => this.setState({ errorMessage: error.message }))
-    }
+            .catch(error => Alert.alert(error.message));
+        }
+    )}
     
     render(){
     return (
@@ -36,7 +39,9 @@ export default class Login extends React.Component {
                     style={styles.inputText}
                     autoCapitalize="none"
                     placeholder="Email" 
+                    keyboardType="email-address"
                     placeholderTextColor="#003f5c"
+                    onBlur={Keyboard.dismiss}
                     onChangeText={text => this.setState({email:text})}
                 />
             </View>
@@ -48,13 +53,14 @@ export default class Login extends React.Component {
                     autoCapitalize="none"
                     placeholder="Password" 
                     placeholderTextColor="#003f5c"
+                    onBlur={Keyboard.dismiss}
                     onChangeText={text => this.setState({password:text})}
                 />
             </View>
 
             <TouchableOpacity 
                 style={styles.loginButton}
-                onPress={() => this.handleLogin}>
+                onPress={async () => await  this.handleLogin()}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
 
@@ -99,7 +105,7 @@ const styles = StyleSheet.create({
         color:"#757575"
     },
     otherOptionsText: {
-        fontSize:20,
+        fontSize:18,
         color:"#E6E6E6"
     },
     loginButton: {

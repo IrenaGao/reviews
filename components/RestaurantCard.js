@@ -1,18 +1,20 @@
 import React from 'react';
-import { View, StyleSheet, Image, Text } from 'react-native';
+import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 
 export default class RestaurantCard extends React.Component{
     render(){
         return(
-            <View style={styles.container}>
-                <View style={styles.imageContainer}>
-                    <Image style={styles.image} source={{uri: this.props.image}}/>
+            <TouchableOpacity style={{flex: 1}} onPress={() => this.props.navigation.navigate("RestaurantOverview", { id : this.props.id })}>
+                <View style={styles.container} >
+                    <View style={styles.imageContainer}>
+                        <Image style={styles.image} source={{uri: this.props.image}}/>
+                    </View>
+                    <View style={styles.description}>
+                        <Text>{this.props.name}</Text>
+                        <Text style={{fontSize: 10, fontWeight:"100", color:'#D3D3D3'}}>{this.props.location}</Text>
+                    </View>
                 </View>
-                <View style={styles.description}>
-                    <Text>{this.props.name}</Text>
-                    <Text style={{fontSize: 10, fontWeight:"100", color:'#D3D3D3'}}>{this.props.location}</Text>
-                </View>
-            </View>
+            </TouchableOpacity>
         );
     }
 }

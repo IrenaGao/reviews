@@ -22,60 +22,84 @@ import Home from './screens/Home';
 import Register from './screens/Register';
 import Login from './screens/Login';
 import Forgot from './screens/Forgot';
+import RestaurantOverview from './screens/RestaurantOverview';
+import { SideDrawer } from './components/SideDrawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 //Creating Navigation Stacks
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+const HomeStackScreen = () => (
+  <Stack.Navigator screenOptions={{
+    headerShown: false
+  }}>
+    <Stack.Screen name="Home" component={Home} />
+    <Stack.Screen name="RestaurantOverview" component={RestaurantOverview} unmountOnBlur={true} options={{ unmountOnBlur: true }} />
+  </Stack.Navigator>
+)
 
 export default class App extends React.Component {
-  uid = app.auth().currentUser?.uid;
-  ref = app.firestore().doc('/users/' + this.uid);
-
   state = {
+    uid: null,
     isLoading : true,
-    user: null,
+    userName: null,
+    userEmail: null,
   }
 
   componentDidMount = async () => {
     app.auth().onAuthStateChanged(async user => {
       if(user){
-       let uid = app.auth().currentUser?.uid;
-       this.setState({user: user});
+       this.setState({uid: app.auth().currentUser?.uid});
       }
       else{
-        this.setState({user : null});
+        this.setState({uid : null});
+        this.setState({userName: null});
+        this.setState({userEmail: null});
+      }
+
+      if(this.state.uid !== null){
+        await app.firestore().doc('users/' + this.state.uid).get({source: 'default'})
+          .then(user => {
+            this.setState({userName: user.get('userName')});
+            this.setState({userEmail: user.get('email')});
+          })
       }
 
       if(this.state.isLoading === true){
         this.setState({isLoading: false});
       }
     }) 
-
-
   }
   render(){
     if(this.state.loading === true){
       return null;
     }
     else{
-      return homeStack();
+      return homeStack(this.state);
     }
   }
 }
 
-function homeStack(){
+function homeStack(state){
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Forgot" component={Forgot} />
-        </Stack.Navigator>
+        <Drawer.Navigator screenOptions={{headerShown: false}} drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
+          <Drawer.Screen name="Home" component={HomeStackScreen} />
+          <Drawer.Screen name="Register" component={Register} />
+          <Drawer.Screen name="Login" component={Login} />
+          <Drawer.Screen name="Forgot" component={Forgot} />
+        </Drawer.Navigator>
       </NavigationContainer>
     </Provider>
   )
+}
+
+async function handleLogout(props){
+  await app.auth().signOut()
+    .then(() => props.navigation.navigate('Home'));
 }
 
 const styles = StyleSheet.create({
