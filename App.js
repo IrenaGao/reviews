@@ -72,7 +72,6 @@ export default class App extends React.Component {
       }
     }) 
   }
-
   render(){
     if(this.state.loading === true){
       return null;

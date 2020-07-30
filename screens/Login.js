@@ -4,7 +4,9 @@ import {
     Text, 
     View, 
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    Keyboard,
+    Alert
  } from 'react-native';
 
  //Firebase imports 
@@ -23,7 +25,7 @@ export default class Login extends React.Component {
         app.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(async () => {
             app.auth().signInWithEmailAndPassword(email, password)
             .then(() => this.props.navigation.navigate('Home'))
-            .catch(error => this.setState({ errorMessage: error.message }));
+            .catch(error => Alert.alert(error.message));
         }
     )}
     
@@ -37,7 +39,9 @@ export default class Login extends React.Component {
                     style={styles.inputText}
                     autoCapitalize="none"
                     placeholder="Email" 
+                    keyboardType="email-address"
                     placeholderTextColor="#003f5c"
+                    onBlur={Keyboard.dismiss}
                     onChangeText={text => this.setState({email:text})}
                 />
             </View>
@@ -49,6 +53,7 @@ export default class Login extends React.Component {
                     autoCapitalize="none"
                     placeholder="Password" 
                     placeholderTextColor="#003f5c"
+                    onBlur={Keyboard.dismiss}
                     onChangeText={text => this.setState({password:text})}
                 />
             </View>
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
         color:"#757575"
     },
     otherOptionsText: {
-        fontSize:20,
+        fontSize:18,
         color:"#E6E6E6"
     },
     loginButton: {
