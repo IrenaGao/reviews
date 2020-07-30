@@ -31,12 +31,12 @@ const Tab = createMaterialBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 export default class App extends React.Component {
-  uid = app.auth().currentUser?.uid;
-  ref = app.firestore().doc('/users/' + this.uid);
+  // uid = app.auth().currentUser?.uid;
+  // ref = app.firestore().doc('/users/' + this.uid);
 
   state = {
     isLoading : true,
-    user: null,
+    uid: undefined,
     userName: null,
     userEmail: null,
   }
@@ -44,24 +44,27 @@ export default class App extends React.Component {
   componentDidMount = async () => {
     app.auth().onAuthStateChanged(async user => {
       if(user){
-       let uid = app.auth().currentUser?.uid;
+       this.setState({uid: app.auth().currentUser?.uid});
        this.setState({user: user});
+       console.log("uid: " + this.state.uid)
+       console.log("user: " + this.state.user)
       }
-      else{
-        this.setState({user : null});
-      }
+      // else{
+      //   this.setState({user : null});
+      // }
 
       if(this.state.isLoading === true){
         this.setState({isLoading: false});
       }
     }) 
 
-    if(this.uid !== undefined){
+    if(this.state.uid !== undefined){
       await app.firestore().doc('/users/' + this.uid).get({source: 'default'})
       .then(user => {
         this.setState({userName: user.userName});
         this.setState({userEmail: user.userEmail});
-      })
+      });
+      console.log("Logged in as " + this.state.userName)
     }
   }
 
@@ -70,7 +73,7 @@ export default class App extends React.Component {
       return null;
     }
     else{
-      return homeStack(this.state);
+      return appStack(this.state);
     }
   }
 }
@@ -78,15 +81,28 @@ export default class App extends React.Component {
 function homeStack(state){
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Drawer.Navigator screenOptions={{headerShown: false}} drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
+        <Drawer.Navigator 
+          screenOptions={{headerShown: false}} 
+          drawerContent={(props) => <SideDrawer {...props} 
+            handleLogout={handleLogout} 
+            userName={state.userName} 
+            userEmail={state.userEmail} />}>
           <Drawer.Screen name="Home" component={Home} />
-          <Drawer.Screen name="Register" component={Register} />
-          <Drawer.Screen name="Login" component={Login} />
-          <Drawer.Screen name="Forgot" component={Forgot} />
         </Drawer.Navigator>
-      </NavigationContainer>
     </Provider>
+  )
+}
+
+function appStack(state){
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name="homeStack" component={homeStack} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Forgot" component={Forgot} />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 

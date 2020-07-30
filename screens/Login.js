@@ -5,8 +5,11 @@ import {
     View, 
     TextInput,
     TouchableOpacity,
-    Keyboard
+    Keyboard,
+    Alert
  } from 'react-native';
+
+ import { app } from '../src/Config';
 
 export default class Login extends React.Component {
     state={
@@ -16,10 +19,10 @@ export default class Login extends React.Component {
 
     handleLogin = () => {
         const { email, password } = this.state
-        firebase
+        app
             .auth()
             .signInWithEmailAndPassword(email, password)
-            .then(() => this.props.navigation.navigate('Home'))
+            .then(() => this.props.navigation.navigate('homeStack', {screen : 'Home'}))
             .catch(error => Alert.alert(error.message)); //console.log(error)
     }
     
@@ -54,7 +57,7 @@ export default class Login extends React.Component {
 
             <TouchableOpacity 
                 style={styles.loginButton}
-                onPress={() => this.handleLogin}>
+                onPress={this.handleLogin}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
 
