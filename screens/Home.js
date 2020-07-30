@@ -89,7 +89,7 @@ class Home extends React.Component{
         this.toLongitudeLatitude(location);
 
         //Fetch Data then save to redux
-        if(this.state.longitude !== null && this.state.latitude !== null && this.getDataLocally() === null){
+        if(this.state.longitude !== null && this.state.latitude !== null && await this.getDataLocally() === null){
             if (!this.props.content) {
               const latitude = this.state.latitude;
               const longitude = this.state.longitude;

@@ -2,7 +2,6 @@ import React from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 
 export function SideDrawer(props){
-    console.log(props.userName);
     if(props.userName === null && props.userEmail === null){
         return(
             <View style={styles.container}>
