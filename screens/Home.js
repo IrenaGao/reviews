@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Alert, FlatList, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Alert, FlatList, TouchableOpacity, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
 //Location
@@ -8,11 +8,21 @@ import * as Location from 'expo-location';
 // Interactors
 import { interactor as getContentInteractor } from '../integration/domain/GetContentInteractor';
 import { interactor as getBusinessesInteractor } from './domain/GetBusinessesInteractor';
+import { interactor as getRestaurantInteractor } from './domain/getRestaurantInteractor';
 
 //Redux 
 import * as actions from '../store/index';
 import { connect } from 'react-redux';
 
+//Search Bar
+import { SearchBar } from 'react-native-elements';
+
+// import {
+//     ScrollView,
+//     TextInput,
+//     Keyboard,
+//     TouchableOpacity
+// } from 'react-native';
 //Firebase
 import { app } from '../src/Config';
 
@@ -25,10 +35,28 @@ class Home extends React.Component{
         longitude: null,
         status: null,
         isLoading: true,
+        hadFetch: false,
+        search: '',
+        text: '',
+        filteredNames: '',
         dataCountEnd: 10,
         dataCountStart: 0,
-    }
-    
+    };
+    arrayHolder = [];
+
+    updateSearch = (search) => {
+        this.setState({ search });
+        console.log(search);
+        let text = search.toLowerCase();
+        let restaurants = getRestaurantInteractor(this.props.content.businesses);
+        const filteredNamesTemp = restaurants.filter((item) => {
+            return item.name.toLowerCase().match(text);
+        })
+        this.setState({
+            filteredNames: filteredNamesTemp
+        });
+    };
+        
     saveDataLocally = async (data) => {
         try{
             const jsonData = JSON.stringify(data);
@@ -75,6 +103,9 @@ class Home extends React.Component{
                 .then(() => {
                     this.saveDataLocally(this.props.content);
                 })
+            .catch((error) => {
+                console.error(error);
+            });
           }
         }
         //If we have local data, we want to save that local data to redux
@@ -93,12 +124,16 @@ class Home extends React.Component{
         this.setState({longitude: location.coords.longitude});
     }
 
-    //Load More entry on flatlist end
+    _onPressSearchButton = function() {
+        this.refs.searchbar.blur();
+    }
+
     handleLoadMore = () => {
         this.setState({dataCountEnd: this.state.dataCountEnd + 10});
     }
  
     render(){
+        const { search } = this.state;
         if(this.props.content === null){
             return(
                 <View>
@@ -109,6 +144,31 @@ class Home extends React.Component{
         return(
             <View style={styles.container}>
                 <Text style={styles.header}>Restaurants</Text>
+                <SearchBar
+                    round   
+                    lightTheme
+                    placeholder="Type Here..."
+                    onChangeText={this.updateSearch}
+                    value={search}
+                    onBlur={Keyboard.dismiss}
+                    onSearchButtonPress={this._onPressSearchButton}
+                />
+                <View>
+                    <FlatList 
+                        data={this.state.filteredNames}
+                        renderItem={({ item }) =>
+                            <Card
+                                {...this.props}
+                                name={item.name}
+                                image={item.image}
+                                location={item.location}
+                                distance={item.distance}
+                                // category={item.category}
+                            />
+                        }
+                        keyExtractor={(item) => item.id} 
+                    />
+                </View>
                 <FlatList
                     data={getBusinessesInteractor(this.props.content.businesses).slice(0, this.state.dataCountEnd)}
                     extraData={getBusinessesInteractor(this.props.content.businesses)}
