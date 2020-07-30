@@ -57,7 +57,7 @@ export default class Register extends React.Component {
                         maxLength={20}
                         onChangeText={username => this.setState({username:username})}
                         value={this.state.username}
-                        onBlor={Keyboard.dismiss}
+                        onBlur={Keyboard.dismiss}
                     />
                 </View>
                 <View style={styles.inputContainer}>

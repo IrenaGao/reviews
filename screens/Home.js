@@ -1,15 +1,26 @@
 import React from 'react';
-import {StyleSheet, Text, View, Alert, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Alert, FlatList} from 'react-native';
 
 //Location
 import * as Location from 'expo-location';
 
 // Interactors
 import { interactor as getContentInteractor } from '../integration/domain/GetContentInteractor';
+import { interactor as getRestaurantInteractor } from './domains/getRestaurantInteractor';
 
 //Redux 
 import * as actions from '../store/index';
 import { connect } from 'react-redux';
+
+//Search Bar
+import { SearchBar } from 'react-native-elements';
+import Card from '../components/RestaurantCard';
+import {
+    ScrollView,
+    TextInput,
+    Keyboard,
+    TouchableOpacity
+} from 'react-native';
 
 class Home extends React.Component{
     state = {
@@ -18,7 +29,25 @@ class Home extends React.Component{
         status: null,
         isLoading: true,
         hadFetch: false,
-    }
+        search: '',
+        text: '',
+        filteredNames: ''
+    };
+    arrayHolder = [];
+
+    updateSearch = (search) => {
+        this.setState({ search });
+        console.log(search);
+        let text = search.toLowerCase();
+        let restaurants = getRestaurantInteractor(this.props.content.businesses);
+        const filteredNamesTemp = restaurants.filter((item) => {
+            return item.name.toLowerCase().match(text);
+        })
+        this.setState({
+            filteredNames: filteredNamesTemp
+        });
+        console.log(this.state.filteredNames);
+    };
     
     componentDidMount =  async () => {
         //Set User's Location Permission
@@ -43,6 +72,9 @@ class Home extends React.Component{
                   this.props.storeContent(content);
                   this.setState({hadFetch: true});
                 })
+            .catch((error) => {
+                console.error(error);
+            });
           }
         }
         if(this.state.isLoading === false){
@@ -58,13 +90,27 @@ class Home extends React.Component{
         this.setState({latitude: location.coords.latitude});
         this.setState({longitude: location.coords.longitude});
     }
+
+    _onPressSearchButton = function() {
+        this.refs.searchbar.blur();
+    }
     
     render(){
+        const { search } = this.state;
         return(
-            <View>
+            <ScrollView keyboardShouldPersistTaps='never'>
                 <Text style = {styles.header}>
                     Welcome to Reviews! 
                 </Text>
+                <SearchBar
+                    round   
+                    lightTheme
+                    placeholder="Type Here..."
+                    onChangeText={this.updateSearch}
+                    value={search}
+                    onBlur={Keyboard.dismiss}
+                    onSearchButtonPress={this._onPressSearchButton}
+                />
                 <TouchableOpacity
                     style={styles.signupbutton}
                     onPress = {() => this.props.navigation.navigate("Register")}
@@ -77,7 +123,23 @@ class Home extends React.Component{
                 >
                     <Text>Login</Text>
                 </TouchableOpacity>
+                <View>
+                <FlatList 
+                    data={this.state.filteredNames}
+                    renderItem={({ item }) =>
+                        <Card
+                            {...this.props}
+                            name={item.name}
+                            image={item.image}
+                            location={item.location}
+                            distance={item.distance}
+                            // category={item.category}
+                        />
+                    }
+                    keyExtractor={(item) => item.id}
+                />
             </View>
+            </ScrollView>
         );
     }
 }
