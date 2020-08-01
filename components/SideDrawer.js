@@ -21,51 +21,55 @@ export function SideDrawer(props){
     }
     return(
         <View style={styles.container}>
-            <View style={styles.imageContainer}>
-                {props.profilePic === null ? <Image source={props.defaultPic} /> : <Image source={props.profilePic} />}
+            <View style={styles.userInfo}>
+                <View style={styles.imageContainer}>
+                    {props.profilePic === null ? <Image source={props.defaultPic} /> : <Image source={props.profilePic} />}
+                </View>
+                <View style={styles.header}>
+                    <Text style={styles.headerUserName}>{props.userName}</Text>
+                    <Text style={styles.headerUserEmail}>{props.userEmail}</Text>
+                </View>
             </View>
-            <View style={styles.header}>
-                <Text style={styles.headerUserName}>{props.userName}</Text>
-                <Text style={styles.headerUserEmail}>{props.userEmail}</Text>
-            </View>
-            <Drawer.Section>
-                <DrawerItem
-                    icon={({color, size}) => (
-                        <Ionicons 
-                            name="ios-home"
-                            color={color}
-                            size={22}
-                        />
-                    )}
-                    label="Home"
-                    onPress={() => props.navigation.navigate("Home")}
-                />
-                <DrawerItem
-                    icon={({color, size}) => (
-                        <Ionicons 
-                            name="ios-person"
-                            color={color}
-                            size={22}
-                        />
-                    )}
-                    label="Profile"
-                    onPress={() => props.navigation.navigate("Home")}
-                />
-            </Drawer.Section>
-                <Drawer.Section style={styles.bottom}>
-                    <DrawerItem 
-                        style={styles.bottomDrawerSection}
+            <View style={styles.pages}>
+                <Drawer.Section>
+                    <DrawerItem
                         icon={({color, size}) => (
-                            <Ionicons
-                            name="ios-exit" 
-                            color={color}
-                            size={size}
+                            <Ionicons 
+                                name="ios-home"
+                                color={color}
+                                size={22}
                             />
                         )}
-                        label="Log Out"
-                        onPress={async () =>  await props.handleLogout(props)}
+                        label="Home"
+                        onPress={() => props.navigation.navigate("Home")}
+                    />
+                    <DrawerItem
+                        icon={({color, size}) => (
+                            <Ionicons 
+                                name="ios-person"
+                                color={color}
+                                size={22}
+                            />
+                        )}
+                        label="Profile"
+                        onPress={() => props.navigation.navigate("Home")}
                     />
                 </Drawer.Section>
+            </View>
+            <Drawer.Section style={styles.bottom}>
+                <DrawerItem 
+                    style={styles.bottomDrawerSection}
+                    icon={({color, size}) => (
+                        <Ionicons
+                        name="ios-exit" 
+                        color={color}
+                        size={size}
+                        />
+                    )}
+                    label="Log Out"
+                    onPress={async () =>  await props.handleLogout(props)}
+                />
+            </Drawer.Section>
         </View>
     );
 }
@@ -73,14 +77,22 @@ export function SideDrawer(props){
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        justifyContent: 'center'
+    },
+    userInfo: {
+        marginTop: '20%',
+        elevation: 1,
+        backgroundColor: 'white',
+        marginBottom: '5%'
     },
     imageContainer: {
-        marginLeft: '2%'
+        marginLeft: '2%',
     },
     header: {
         marginLeft: '5%',
         marginTop: '10%',
+    },
+    pages:{
+        marginTop: '5%'
     },
     headerUserName:{
         fontWeight: 'bold',
