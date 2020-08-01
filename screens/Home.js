@@ -108,6 +108,12 @@ class Home extends React.Component{
         }
     }
 
+    componentWillUnmount = () => {
+        this.setState = (state, callback)=>{
+            return;
+        };
+    }
+
     //Obtain the latitude and longitude of last known location
     toLongitudeLatitude = (location) => {
         if(location === null || location === undefined){
