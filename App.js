@@ -70,6 +70,13 @@ export default class App extends React.Component {
       }
     }) 
   }
+
+  componentWillUnmount = () => {
+    this.setState = (state, callback)=>{
+        return;
+    };
+  }
+  
   render(){
     if(this.state.loading === true){
       return null;
