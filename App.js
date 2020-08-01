@@ -1,5 +1,6 @@
 import React  from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Asset } from 'expo-asset';
 
 //Firebase imports 
 import { app } from './src/Config';
@@ -37,9 +38,15 @@ export default class App extends React.Component {
     isLoading : true,
     userName: null,
     userEmail: null,
+    profilePic: null,
   }
 
   componentDidMount = async () => {
+    await Promise.all([
+      Asset.loadAsync([
+        require('./photos/profile.png'),
+      ])
+    ])
     app.auth().onAuthStateChanged(async user => {
       if(user){
        this.setState({uid: app.auth().currentUser?.uid});
@@ -77,7 +84,7 @@ function HomeStackScreen(state) {
   const HomeStack = () => (
     <Drawer.Navigator 
       screenOptions={{headerShown: false}}
-      drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
+      drawerContent={(props) => <SideDrawer {...props} defaultPic={require('./photos/profile.png')} handleLogout={handleLogout} profilePic={state.profilePic} userName={state.userName} userEmail={state.userEmail} />}>
       <Drawer.Screen name="Home" component={Home} />
     </Drawer.Navigator>
   )
