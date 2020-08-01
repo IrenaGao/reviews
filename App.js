@@ -31,15 +31,6 @@ const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
-const HomeStackScreen = () => (
-  <Stack.Navigator screenOptions={{
-    headerShown: false
-  }}>
-    <Stack.Screen name="Home" component={Home} />
-    <Stack.Screen name="RestaurantOverview" component={RestaurantOverview} unmountOnBlur={true} options={{ unmountOnBlur: true }} />
-  </Stack.Navigator>
-)
-
 export default class App extends React.Component {
   state = {
     uid: null,
@@ -82,16 +73,30 @@ export default class App extends React.Component {
   }
 }
 
+function HomeStackScreen(state) {
+  const HomeStack = () => (
+    <Drawer.Navigator 
+      screenOptions={{headerShown: false}}
+      drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
+      <Drawer.Screen name="Home" component={Home} />
+    </Drawer.Navigator>
+  )
+  return(
+    HomeStack
+  );
+}
+
 function homeStack(state){
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Drawer.Navigator screenOptions={{headerShown: false}} drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
-          <Drawer.Screen name="Home" component={HomeStackScreen} />
-          <Drawer.Screen name="Register" component={Register} />
-          <Drawer.Screen name="Login" component={Login} />
-          <Drawer.Screen name="Forgot" component={Forgot} />
-        </Drawer.Navigator>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="homeStack" component={HomeStackScreen(state)} />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Forgot" component={Forgot} />
+          <Stack.Screen name="RestaurantOverview" component={RestaurantOverview} unmountOnBlur={true} options={{ unmountOnBlur: true }} />
+        </Stack.Navigator>
       </NavigationContainer>
     </Provider>
   )
