@@ -60,7 +60,7 @@ export default class Login extends React.Component {
 
             <TouchableOpacity 
                 style={styles.loginButton}
-                onPress={async () => await  this.handleLogin()}>
+                onPress={async () => await this.handleLogin()}>
                 <Text style={styles.loginText}>LOGIN</Text>
             </TouchableOpacity>
 

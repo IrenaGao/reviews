@@ -41,6 +41,14 @@ class RestaurantOverview extends React.Component{
                         <Text>{this.state.distance} miles away</Text>
                     </View>
                 </View>
+
+                <View style={styles.centeredContainer}>
+                    <TouchableOpacity 
+                        style={styles.writeButton} 
+                        onPress = {() => this.props.navigation.navigate("WriteReview", { id : getId(this.props) })}>
+                        <Text style={styles.writeText}>Write a Review</Text>    
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
@@ -63,6 +71,26 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    centeredContainer:{
+        // flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    writeButton:{
+        width:"50%",
+        backgroundColor:"red",
+        borderRadius:20,
+        height:30,
+        marginTop:10,
+        marginBottom:10,
+    },
+    writeText:{
+        color:"white",
+        fontWeight: 'bold', 
+        fontSize: 20, 
+        textAlign:"center", 
+        textAlignVertical:"center"
+    }
 })
 const mapStateToProps = (state) => {
     return {

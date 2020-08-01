@@ -23,6 +23,7 @@ import Register from './screens/Register';
 import Login from './screens/Login';
 import Forgot from './screens/Forgot';
 import RestaurantOverview from './screens/RestaurantOverview';
+import WriteReview from './screens/WriteReview';
 import { SideDrawer } from './components/SideDrawer';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
@@ -96,6 +97,7 @@ function homeStack(state){
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Forgot" component={Forgot} />
           <Stack.Screen name="RestaurantOverview" component={RestaurantOverview} unmountOnBlur={true} options={{ unmountOnBlur: true }} />
+          <Stack.Screen name="WriteReview" component={WriteReview}/>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
