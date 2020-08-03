@@ -1,12 +1,13 @@
 import React from 'react';
 import {StyleSheet, 
     Text, 
+    View,
     ScrollView, 
-    TouchableOpacity, 
-    Keyboard } from 'react-native';
-
+    Keyboard, 
+    TextInput
+} from 'react-native';
 import { connect } from 'react-redux';
-
+import { FontAwesome } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider'
 
 //Interactors
@@ -14,7 +15,9 @@ import { interactor as getSingleBusinessInteractor } from './domain/GetSingleBus
 
 class WriteReview extends React.Component {
     state={
-        name:""
+        name:"",
+        safety:50,
+        fairness: 50
     }
 
     componentDidMount = () => {
@@ -24,25 +27,49 @@ class WriteReview extends React.Component {
         console.log(restaurant.name)
     }
 
+
+
     render() {
         return (
-            <ScrollView styles={styles.container}>
-                <Text style={styles.header}>Write a Review</Text>
+            <View styles={{flex:1}}>
+                <FontAwesome.Button 
+                    name="chevron-left" 
+                    color="black"
+                    backgroundColor="white"
+                    marginTop={15}
+                    onPress={() => this.props.navigation.goBack()}> 
+                    <Text style={styles.header}>{this.state.name}</Text>
+                </FontAwesome.Button>
 
-                <TouchableOpacity 
-                    style={styles.header}
-                    onPress={ () => this.props.navigation.goBack()}>
-                    <Text style={styles.loginText}>Go Back to {this.state.name}</Text>
-                </TouchableOpacity>
-
-                <Slider
-                    style={{width: 200, height: 40}}
-                    minimumValue={0}
-                    maximumValue={1}
-                    minimumTrackTintColor="#FFFFFF"
-                    maximumTrackTintColor="#000000"
-                />
-            </ScrollView>
+                <ScrollView>
+                    <View style={styles.ratingContainer}>
+                        <View styles={{width:100}}>
+                            <Text styles={{textAlign:'right'}}>Safety</Text>
+                        </View>
+                        <View>
+                            <Slider
+                                style={{width:250, height:40}}
+                                minimumValue={0}
+                                maximumValue={100}
+                                step={1}
+                                value={50}
+                                onValueChange={val => this.setState({safety:val})}
+                            />
+                        </View>
+                        <View>
+                            <Text>{this.state.safety}</Text>
+                        </View>
+                    </View>
+                    <View styles={{justifyContent:'center'}}>
+                        <TextInput 
+                            style={{height:40, width:250, marginLeft:80}}
+                            placeholder="Add a comment..."
+                            underlineColorAndroid='green'/>
+                    </View>
+                    
+                </ScrollView>
+                
+            </View>
         )
     }
 }
@@ -53,11 +80,14 @@ const styles = StyleSheet.create({
     },
     header:{
         fontWeight: 'bold',
-        fontSize: 26,
-        marginTop: '5%',
-        marginLeft: '3%' 
+        fontSize: 26
+    },
+    ratingContainer:{
+        flexDirection: 'row', 
+        justifyContent:'flex-start',
+        alignItems:'center',
+        marginLeft:25
     }
-
 })
 
 const mapStateToProps = (state) => {

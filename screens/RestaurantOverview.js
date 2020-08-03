@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import { connect } from 'react-redux';
+import { FontAwesome } from '@expo/vector-icons';
+
 
 //Interactors
 import { interactor as getSingleBusinessInteractor } from './domain/GetSingleBusinessInteractor';
@@ -31,6 +33,15 @@ class RestaurantOverview extends React.Component{
         }
         return(
             <View style={styles.containter}>
+                <FontAwesome.Button 
+                    name="chevron-left" 
+                    color="black"
+                    backgroundColor="white"
+                    marginTop={15}
+                    onPress={() => this.props.navigation.goBack()}> 
+                    <Text style={{fontWeight:'bold', fontSize:26}}>Restaurants</Text>
+                </FontAwesome.Button>
+
                 <View style={styles.imageContainer}>
                     <Image style={styles.image} source={{uri: this.state.image}} />
                 </View>
@@ -72,7 +83,6 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     centeredContainer:{
-        // flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
