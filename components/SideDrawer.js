@@ -4,7 +4,7 @@ import { Drawer } from 'react-native-paper';
 import { DrawerItem } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 
-export function SideDrawer(props){
+  export function SideDrawer(props){
     if(props.userName === null && props.userEmail === null){
         return(
             <View style={styles.container}>
@@ -23,7 +23,10 @@ export function SideDrawer(props){
         <View style={styles.container}>
             <View style={styles.userInfo}>
                 <View style={styles.imageContainer}>
-                    {props.profilePic === null ? <Image source={props.defaultPic} /> : <Image source={props.profilePic} />}
+                    {props.profilePic === null ? <Image style={{width: 100, height: 100}} source={props.defaultPic} /> : <Image source={{uri : props.profilePic}} style={{width: 100, height: 100, borderRadius: 100 /2 }} />}
+                    <TouchableOpacity style={{position: 'absolute', bottom: 5, right: 10}} onPress={() => props.pickImage()}>
+                        <Ionicons name="ios-add-circle" size={26} color={'#a6e3da'} />
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.header}>
                     <Text style={styles.headerUserName}>{props.userName}</Text>
@@ -85,6 +88,7 @@ const styles = StyleSheet.create({
         marginBottom: '5%'
     },
     imageContainer: {
+        alignSelf: 'flex-start',
         marginLeft: '2%',
     },
     header: {

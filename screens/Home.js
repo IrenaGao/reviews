@@ -156,7 +156,7 @@ class Home extends React.Component{
                     <FlatList 
                         data={this.state.filteredNames}
                         renderItem={({ item }) =>
-                            <Card
+                            <Card 
                                 {...this.props}
                                 name={item.name}
                                 image={item.image}
