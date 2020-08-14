@@ -1,5 +1,8 @@
 import React  from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
+import { Asset } from 'expo-asset';
+import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-community/async-storage';
 
 //Firebase imports 
 import { app } from './src/Config';
@@ -37,9 +40,21 @@ export default class App extends React.Component {
     isLoading : true,
     userName: null,
     userEmail: null,
+    profilePic: null,
+    private: false,
+    reviewsNumber: 0,
   }
 
   componentDidMount = async () => {
+    await Promise.all([
+      Asset.loadAsync([
+        require('./photos/profile.png'),
+      ])
+    ])
+    const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Sorry, we need camera roll permissions to make this work!');
+      }
     app.auth().onAuthStateChanged(async user => {
       if(user){
        this.setState({uid: app.auth().currentUser?.uid});
@@ -58,26 +73,83 @@ export default class App extends React.Component {
           })
       }
 
+      const profilePicture = await AsyncStorage.getItem("profilePic");
+      if(profilePicture !== null){
+        this.setState({profilePic: profilePicture});
+      }
+
       if(this.state.isLoading === true){
         this.setState({isLoading: false});
       }
     }) 
   }
+
+  componentWillUnmount = () => {
+    this.setState = (state, callback)=>{
+        return;
+    };
+  }
+  savePictureLocally = (uri) => {
+    AsyncStorage.setItem("profilePic", uri);
+  }
+  uploadFromGallery = async (uri) => {
+      console.log("uploading");
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      let ref = app.storage().ref("profiles/" + this.state.uid + "/profile-photo");
+      ref.put(blob).then(() => {
+        ref.getDownloadURL().then(cloudUri => {
+          app.firestore().doc('profile/' + this.state.uid).set({
+            numberOfReviews : this.state.reviewsNumber, 
+            private : this.state.private, 
+            pictureCloud : cloudUri, 
+            pictureLocal : uri,
+          })
+        })
+      })
+      .then(() => this.savePictureLocally(uri))
+      .then(() => this.setState({profilePic: uri}))
+    }
+    
+    _pickImage = async () => {
+      try {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+        if (!result.cancelled) {
+          await this.uploadFromGallery(result.uri)
+        }
+      } catch (E) {
+        console.log(E);
+      }
+    };
+  
   render(){
     if(this.state.loading === true){
       return null;
     }
     else{
-      return homeStack(this.state);
+      return homeStack(this.state, this._pickImage);
     }
   }
 }
 
-function HomeStackScreen(state) {
+function HomeStackScreen(state, _pickImage) {
   const HomeStack = () => (
     <Drawer.Navigator 
       screenOptions={{headerShown: false}}
-      drawerContent={(props) => <SideDrawer {...props} handleLogout={handleLogout} userName={state.userName} userEmail={state.userEmail} />}>
+      drawerContent={(props) => 
+        <SideDrawer 
+          {...props} 
+          pickImage={_pickImage} 
+          defaultPic={require('./photos/profile.png')} 
+          handleLogout={handleLogout} 
+          profilePic={state.profilePic} 
+          userName={state.userName} 
+          userEmail={state.userEmail} />}>
       <Drawer.Screen name="Home" component={Home} />
     </Drawer.Navigator>
   )
@@ -86,12 +158,12 @@ function HomeStackScreen(state) {
   );
 }
 
-function homeStack(state){
+function homeStack(state, _pickImage){
   return (
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="homeStack" component={HomeStackScreen(state)} />
+          <Stack.Screen name="homeStack" component={HomeStackScreen(state, _pickImage)} />
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Forgot" component={Forgot} />
