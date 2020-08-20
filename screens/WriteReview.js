@@ -12,24 +12,68 @@ import {AutoGrowingTextInput} from 'react-native-autogrow-textinput';
 
 //Interactors
 import { interactor as getSingleBusinessInteractor } from './domain/GetSingleBusinessInteractor';
+import { $CombinedState } from 'redux';
 
 class WriteReview extends React.Component {
     state={
         name:"",
-        // TODO: make array of rating types, with each element containing a value and a comment
-        safetyValue:50,
-        safetyComment:"",
-
-        fairnessValue: 50,
-        fairnessComment:"",
-
-        healthValue:50,
-        healthComment:""
+        ratings:[
+            {category:"Safety", value:50, comment:""},
+            {category:"Fairness", value:50, comment:""},
+            {category:"Health", value:50, comment:""},
+        ]
     }
 
     componentDidMount = () => {
         const restaurant = getSingleBusinessInteractor(this.props.content.businesses, getId(this.props));
         this.setState({name: restaurant.name}); 
+    }
+
+    updateRatingValue(idx, update){
+        var ratings = this.state.ratings
+        ratings[idx].value = update
+        return ratings
+    }
+
+    renderRating(idx){
+        return (
+            <View>
+                <View style={styles.sliderContainer}>
+                    <View style={styles.sliderTextView}>
+                        <Text styles={{textAlign:'right'}}>
+                            {this.state.ratings[idx].category}
+                        </Text>
+                    </View>
+                    <View style={{flex:4, justifyContent: "center"}}>
+                        <Slider
+                            style={{flex:1, width:'100%', height:40}}
+                            minimumValue={0}
+                            maximumValue={100}
+                            step={1}
+                            value={50}
+                            onValueChange={val => 
+                                this.setState({ratings:this.updateRatingValue(idx, val)})}
+                        />
+                    </View>
+                    <View style={styles.sliderTextView}>
+                        <Text>{this.state.ratings[idx].value}</Text>
+                    </View>
+                </View>
+            
+                <View style={styles.commentContainer}>
+                    <View style={{flex:1}}/>
+
+                    <AutoGrowingTextInput 
+                        style={styles.commentInput}
+                        placeholder="Add a comment..."
+                        onEndEditing={e => {
+                            Keyboard.dismiss
+                            this.state.ratings[idx].comment = e.nativeEvent.text
+                        }}
+                    />
+                </View>     
+            </View>      
+        )
     }
 
     render() {
@@ -45,103 +89,7 @@ class WriteReview extends React.Component {
                 </FontAwesome.Button>
 
                 <ScrollView>
-                    <View style={styles.sliderContainer}>
-                        <View style={styles.sliderTextView}>
-                            <Text styles={{textAlign:'right'}}>Safety</Text>
-                        </View>
-                        <View style={{flex:4, justifyContent: "center"}}>
-                            <Slider
-                                style={{flex:1, width:'100%', height:40}}
-                                minimumValue={0}
-                                maximumValue={100}
-                                step={1}
-                                value={50}
-                                onValueChange={val => this.setState({safetyValue:val})}
-                            />
-                        </View>
-                        <View style={styles.sliderTextView}>
-                            <Text>{this.state.safetyValue}</Text>
-                        </View>
-                    </View>
-                    
-                    <View style={styles.commentContainer}>
-                        <View style={{flex:1}}/>
-
-                        <AutoGrowingTextInput 
-                            style={styles.commentInput}
-                            placeholder="Add a comment..."
-                            onEndEditing={e => {
-                                Keyboard.dismiss
-                                this.setState({safetyComment:e.nativeEvent.text})
-                            }}
-                        />
-                    </View>
-
-
-                    <View style={styles.sliderContainer}>
-                        <View style={styles.sliderTextView}>
-                            <Text styles={{textAlign:'right'}}>Fairness</Text>
-                        </View>
-                        <View style={{flex:4, justifyContent: "center"}}>
-                            <Slider
-                                style={{flex:1, width:'100%', height:40}}
-                                minimumValue={0}
-                                maximumValue={100}
-                                step={1}
-                                value={50}
-                                onValueChange={val => this.setState({fairnessValue:val})}
-                            />
-                        </View>
-                        <View style={styles.sliderTextView}>
-                            <Text>{this.state.fairnessValue}</Text>
-                        </View>
-                    </View>
-                    
-                    <View style={styles.commentContainer}>
-                        <View style={{flex:1}}/>
-
-                        <AutoGrowingTextInput 
-                            style={styles.commentInput}
-                            placeholder="Add a comment..."
-                            onEndEditing={e => {
-                                Keyboard.dismiss
-                                this.setState({fairnessComment:e.nativeEvent.text})
-                            }}
-                        />
-                    </View>
-
-                    <View style={styles.sliderContainer}>
-                        <View style={styles.sliderTextView}>
-                            <Text styles={{textAlign:'right'}}>Health</Text>
-                        </View>
-                        <View style={{flex:4, justifyContent: "center"}}>
-                            <Slider
-                                style={{flex:1, width:'100%', height:40}}
-                                minimumValue={0}
-                                maximumValue={100}
-                                step={1}
-                                value={50}
-                                onValueChange={val => this.setState({healthValue:val})}
-                            />
-                        </View>
-                        <View style={styles.sliderTextView}>
-                            <Text>{this.state.healthValue}</Text>
-                        </View>
-                    </View>
-                    
-                    <View style={styles.commentContainer}>
-                        <View style={{flex:1}}/>
-
-                        <AutoGrowingTextInput 
-                            style={styles.commentInput}
-                            placeholder="Add a comment..."
-                            onEndEditing={e => {
-                                Keyboard.dismiss
-                                this.setState({healthComment:e.nativeEvent.text})
-                                console.log(this.state.healthComment)
-                            }}
-                        />
-                    </View>
+                    {this.state.ratings.map((item, key) => this.renderRating(key))}
                 </ScrollView>
             </View>
         )
